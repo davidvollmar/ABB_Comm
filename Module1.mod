@@ -94,6 +94,7 @@ MODULE Module1
                 TPWrite "The target Coordinate Z-axis is: "\Num:=TargetData.z;
                 buf2:="";
                 user_selectionStart;
+                SocketSend client_socket\Str:="&";
             ELSE
                 buf2:=buf2+rec_str;
             ENDIF
@@ -101,6 +102,16 @@ MODULE Module1
 
         SocketClose client_socket;
 
+        ERROR
+            IF ERRNO = ERR_SOCK_TIMEOUT THEN
+                TPWrite "Socket Connection Timed out.";
+            ELSEIF ERRNO = ERR_SOCK_ADDR_INUSE THEN
+                TPWrite "The Socket addres is already in use";
+            ELSEIF ERRNO = ERR_SOCK_CLOSED THEN
+                TPWrite "The Socked Connection was closed";
+            ELSE
+                !no error handling.
+            ENDIF
     ENDPROC
 
 
@@ -109,8 +120,7 @@ MODULE Module1
         TPWrite "The target Coordinate X-axis is: "\Num:=TargetData.x;
         TPWrite "The target Coordinate Y-axis is: "\Num:=TargetData.y;
         TPWrite "The target Coordinate Z-axis is: "\Num:=TargetData.z;
-        WaitTime 1;
-
+        
         pick_object;
     ENDPROC
 
@@ -119,9 +129,9 @@ MODULE Module1
         !Sets P10 with vison coordinates  
         p11:=[[TargetData.x,TargetData.y,TargetData.z],[1,0,0,0],[0,0,0,0],[9E9,9E9,9E9,9E9,9E9,9E9]];
         !Sets P10 with vison coordinates 
-        !MoveJ p10,v100,z1,TCP_RobotGripper\WObj:=wobj_vision;
+        !MoveJ p10,v100,fine,TCP_RobotGripper\WObj:=wobj_vision;
         !Moves to P10
-        MoveJ p11,v100,z1,TCP_RobotGripper\WObj:=wobj_vision;
+        MoveJ p11,v100,fine,TCP_RobotGripper\WObj:=wobj_vision;
         !Moves to P11
 
         !        WaitTime 0.3;
@@ -131,7 +141,7 @@ MODULE Module1
         !        Reset DO10_1;
         !        !reset close gripper
         !
-        !        !MoveAbsJ HomeTarget,v500,z100,TCP_RobotGripper\WObj:=wobj_vision;
+        !        !MoveAbsJ HomeTarget,v500,fine00,TCP_RobotGripper\WObj:=wobj_vision;
         !        !Move to home
         !        WaitTime 0.3;
         !        Set DO10_2;
